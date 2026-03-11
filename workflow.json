@@ -1,0 +1,105 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "bdce46d2-cebb-4d49-882e-aca6e926dea8",
+      "name": "Manuel Başlat",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [1200, 1648]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ✏️ CV'nizi base64 formatına dönüştürüp buraya yapıştırın\n// Convert your CV to base64 and paste it here\n// CLI: base64 -i YourCV.pdf | tr -d '\\n'\nconst base64CV = 'YOUR_BASE64_CV_HERE';\n\nconst email = $input.item.json.email;\n\nreturn [\n  {\n    json: { email },\n    binary: {\n      data: {\n        data: base64CV,\n        mimeType: 'application/pdf',\n        fileName: 'CV_YourName.pdf'\n      }\n    }\n  }\n];"
+      },
+      "id": "6584f84a-072e-4bf1-9705-ec7ccb1c6967",
+      "name": "CV Hazirla",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1872, 1696]
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "id": "a203a27d-d298-4930-8c73-5b63e30ea10d",
+      "name": "Bekleme",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [2064, 1696],
+      "webhookId": "wait-webhook-001"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "İş Başvurusu | Adınız Soyadınız - Pozisyon",
+        "message": "<p>Sayın İlgili,</p>\n\n<p><!-- ✏️ Kendi başvuru mailinizi buraya yazın --></p>\n\n<p>Saygılarımla,<br>\n<strong>Adınız Soyadınız</strong><br>\n📞 05XX XXX XX XX<br>\n🔗 <a href=\"https://linkedin.com/in/username\">linkedin.com/in/username</a><br>\n💻 <a href=\"https://github.com/username\">github.com/username</a></p>",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [{}]
+          }
+        }
+      },
+      "id": "1175098b-7622-47a0-bf35-184f37f9213d",
+      "name": "Gmail Gonder",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [2256, 1696],
+      "webhookId": "ce239e68-d294-435a-b593-0248e4b1b1a9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_GMAIL_CREDENTIAL_ID",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ✏️ Başvuru göndermek istediğiniz e-posta adreslerini buraya ekleyin\n// Add the email addresses you want to apply to\nconst rawList = `\ncompany1@example.com\ncompany2@example.com\nhr@techfirm.com\n`;\n\nreturn rawList\n  .split('\\n')\n  .map(line => line.trim())\n  .filter(line => line.includes('@'))\n  .map(email => ({ json: { email } }));"
+      },
+      "id": "435a6722-9af7-48f8-9f31-5f159b2e0432",
+      "name": "Email Listesi2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1440, 1632]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [1648, 1632],
+      "id": "4b1b80ba-52e9-4620-a349-4e664d779844",
+      "name": "Loop Over Items"
+    }
+  ],
+  "connections": {
+    "Manuel Başlat": {
+      "main": [[{"node": "Email Listesi2", "type": "main", "index": 0}]]
+    },
+    "CV Hazirla": {
+      "main": [[{"node": "Bekleme", "type": "main", "index": 0}]]
+    },
+    "Bekleme": {
+      "main": [[{"node": "Gmail Gonder", "type": "main", "index": 0}]]
+    },
+    "Gmail Gonder": {
+      "main": [[{"node": "Loop Over Items", "type": "main", "index": 0}]]
+    },
+    "Email Listesi2": {
+      "main": [[{"node": "Loop Over Items", "type": "main", "index": 0}]]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [{"node": "CV Hazirla", "type": "main", "index": 0}]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}
