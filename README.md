@@ -8,6 +8,10 @@
 
 ---
 
+🎬 Demo
+https://github.com/user-attachments/assets/9f03d12e-77c7-417e-abd1-d879dfa63aab
+
+---
 ## 📌 What Does It Do?
 
 This n8n workflow lets you send personalized bulk emails with a PDF attachment (e.g. your CV) to an entire list of addresses — fully automated.
