@@ -9,7 +9,8 @@
 ---
 
 🎬 Demo
-https://github.com/user-attachments/assets/9f03d12e-77c7-417e-abd1-d879dfa63aab
+
+https://github.com/user-attachments/assets/9f03d12e-77c7-417e-abd1-d879dfa63aab.mp4
 
 ---
 ## 📌 What Does It Do?
